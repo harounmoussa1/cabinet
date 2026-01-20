@@ -6,5 +6,5 @@ release
 *.local
 .env
 client_secret_563280144828-jr8o0jt5u3r4ju8nrt9hcl56qfr78td4.apps.googleusercontent.com.json
-.db
+*.db
 patient_files
