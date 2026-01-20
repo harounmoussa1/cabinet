@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "allowSyntheticDefaultImports": true,
+        "lib": [
+            "ESNext"
+        ],
+        "types": [
+            "node",
+            "better-sqlite3",
+            "electron"
+        ],
+        "strict": true,
+        "outDir": "../dist-electron",
+        "noEmit": true,
+        "skipLibCheck": true
+    },
+    "include": [
+        "."
+    ]
+}

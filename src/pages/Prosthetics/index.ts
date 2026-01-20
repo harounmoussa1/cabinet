@@ -1,0 +1,1 @@
+export { ProstheticsPage } from './ProstheticsPage';
