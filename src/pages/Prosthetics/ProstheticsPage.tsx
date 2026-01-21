@@ -10,7 +10,8 @@ import {
     Package,
     User,
     Building2,
-    Filter
+    Filter,
+    Search
 } from 'lucide-react';
 import api from '../../lib/api';
 import type { Prosthetic, Patient, Supplier } from '../../types';
@@ -47,6 +48,8 @@ export function ProstheticsPage() {
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedProsthetic, setSelectedProsthetic] = useState<Prosthetic | null>(null);
     const [formData, setFormData] = useState<Partial<Prosthetic>>({});
+    const [patientSearch, setPatientSearch] = useState('');
+    const [showPatientSuggestions, setShowPatientSuggestions] = useState(false);
 
     useEffect(() => {
         loadData();
@@ -94,12 +97,14 @@ export function ProstheticsPage() {
             type: 'COURONNE',
             status: 'ORDERED'
         });
+        setPatientSearch('');
         setIsFormOpen(true);
     };
 
     const handleEdit = (prosthetic: Prosthetic) => {
         setSelectedProsthetic(prosthetic);
         setFormData(prosthetic);
+        setPatientSearch(prosthetic.patientName || '');
         setIsFormOpen(true);
     };
 
@@ -368,26 +373,80 @@ export function ProstheticsPage() {
             >
                 <form id="prosthetic-form" onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                        <div>
+                        <div className="relative">
                             <label className="label">Patient *</label>
-                            <select
-                                className="select"
-                                value={formData.patientId || ''}
-                                onChange={(e) => setFormData({ ...formData, patientId: parseInt(e.target.value) })}
-                                required
-                            >
-                                <option value="">Sélectionner un patient</option>
-                                {patients.map(patient => (
-                                    <option key={patient.id} value={patient.id}>
-                                        {patient.lastName} {patient.firstName}
-                                    </option>
-                                ))}
-                            </select>
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    className="input border-2 border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg p-2.5 w-full pr-10"
+                                    placeholder="Rechercher un patient..."
+                                    value={patientSearch}
+                                    onChange={(e) => {
+                                        setPatientSearch(e.target.value);
+                                        setShowPatientSuggestions(true);
+                                        // Reset ID if input is cleared manually
+                                        if (!e.target.value) setFormData({ ...formData, patientId: undefined });
+                                    }}
+                                    onFocus={() => setShowPatientSuggestions(true)}
+                                    autoComplete="off"
+                                />
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                    <Search size={18} />
+                                </div>
+                            </div>
+
+                            {showPatientSuggestions && patientSearch.length >= 0 && (
+                                <div className="absolute z-[100] w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-2xl max-h-60 overflow-y-auto animate-in fade-in slide-in-from-top-2">
+                                    {patients
+                                        .filter(p => {
+                                            const searchTerms = patientSearch.toLowerCase().split(' ').filter(t => t);
+                                            const patientData = `${p.lastName} ${p.firstName} ${p.phone || ''} ${p.cin || ''}`.toLowerCase();
+                                            return searchTerms.every(term => patientData.includes(term));
+                                        })
+                                        .map(patient => (
+                                            <button
+                                                key={patient.id}
+                                                type="button"
+                                                className="w-full text-left px-4 py-3 hover:bg-indigo-50 flex items-center gap-3 transition-colors border-b border-slate-50 last:border-none"
+                                                onClick={() => {
+                                                    setFormData({ ...formData, patientId: patient.id });
+                                                    setPatientSearch(`${patient.lastName} ${patient.firstName}`);
+                                                    setShowPatientSuggestions(false);
+                                                }}
+                                            >
+                                                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs uppercase">
+                                                    {patient.lastName[0]}{patient.firstName[0]}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-bold text-slate-800 truncate">{patient.lastName} {patient.firstName}</p>
+                                                    <div className="flex items-center gap-2 mt-0.5">
+                                                        <p className="text-[10px] text-slate-400 uppercase tracking-widest">{patient.cin || 'Sans CIN'}</p>
+                                                        {patient.phone && (
+                                                            <>
+                                                                <span className="text-slate-300">•</span>
+                                                                <p className="text-[10px] text-indigo-500 font-bold">{patient.phone}</p>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    {patients.filter(p =>
+                                        `${p.lastName} ${p.firstName}`.toLowerCase().includes(patientSearch.toLowerCase())
+                                    ).length === 0 && (
+                                            <div className="px-4 py-6 text-center text-slate-500 italic text-sm">
+                                                Aucun patient trouvé
+                                            </div>
+                                        )}
+                                </div>
+                            )}
+                            {/* Hidden required field for form validation */}
+                            <input type="hidden" value={formData.patientId || ''} required />
                         </div>
                         <div>
                             <label className="label">Fournisseur *</label>
                             <select
-                                className="select"
+                                className="select border-2 border-slate-300 focus:border-slate-400 focus:ring-slate-400 rounded-md p-2"
                                 value={formData.supplierId || ''}
                                 onChange={(e) => setFormData({ ...formData, supplierId: parseInt(e.target.value) })}
                                 required
@@ -405,23 +464,19 @@ export function ProstheticsPage() {
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="label">Type de prothèse *</label>
-                            <select
-                                className="select"
-                                value={formData.type || 'COURONNE'}
-                                onChange={(e) => setFormData({ ...formData, type: e.target.value as Prosthetic['type'] })}
+                            <input
+                                type="text"
+                                className="input border-2 border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg p-2.5"
+                                placeholder="Ex: Couronne, Bridge..."
+                                value={formData.type || ''}
+                                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                                 required
-                            >
-                                {PROSTHETIC_TYPES.map(type => (
-                                    <option key={type.value} value={type.value}>
-                                        {type.label}
-                                    </option>
-                                ))}
-                            </select>
+                            />
                         </div>
                         <div>
                             <label className="label">Statut</label>
                             <select
-                                className="select"
+                                className="select border-2 border-slate-300 focus:border-slate-400 focus:ring-slate-400 rounded-md p-2"
                                 value={formData.status || 'ORDERED'}
                                 onChange={(e) => setFormData({ ...formData, status: e.target.value as Prosthetic['status'] })}
                             >
@@ -472,7 +527,7 @@ export function ProstheticsPage() {
                         <div>
                             <label className="label">Statut Paiement</label>
                             <select
-                                className="select"
+                                className="select border-2 border-slate-300 focus:border-slate-400 focus:ring-slate-400 rounded-md p-2"
                                 value={formData.paymentStatus || 'UNPAID'}
                                 onChange={(e) => setFormData({
                                     ...formData,

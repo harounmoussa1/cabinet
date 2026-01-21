@@ -21,14 +21,14 @@ import { Modal, ConfirmModal, EmptyState, LoadingCard } from '../../components/u
 import { PatientFiles, PatientHistory } from '../../components/patients';
 
 const APPOINTMENT_TYPES = [
-    { value: 'CONSULTATION', label: 'Consultation' },
-    { value: 'DETARTRAGE', label: 'Détartrage' },
-    { value: 'EXTRACTION', label: 'Extraction' },
-    { value: 'SOINS', label: 'Soins' },
-    { value: 'PROTHESE', label: 'Prothèse' },
-    { value: 'CONTROLE', label: 'Contrôle' },
-    { value: 'URGENCE', label: 'Urgence' },
-    { value: 'AUTRE', label: 'Autre' },
+    { value: 'CONSULTATION', label: 'Consultation', color: 'bg-indigo-500' },
+    { value: 'DETARTRAGE', label: 'Détartrage', color: 'bg-teal-500' },
+    { value: 'EXTRACTION', label: 'Extraction', color: 'bg-rose-500' },
+    { value: 'SOINS', label: 'Soins', color: 'bg-emerald-500' },
+    { value: 'PROTHESE', label: 'Prothèse', color: 'bg-amber-500' },
+    { value: 'CONTROLE', label: 'Contrôle', color: 'bg-violet-500' },
+    { value: 'URGENCE', label: 'Urgence', color: 'bg-red-600' },
+    { value: 'AUTRE', label: 'Autre', color: 'bg-slate-500' },
 ];
 
 const STATUS_OPTIONS = [
@@ -170,6 +170,10 @@ export function AppointmentsPage() {
         return APPOINTMENT_TYPES.find(t => t.value === type)?.label || type;
     };
 
+    const getTypeColor = (type: string) => {
+        return APPOINTMENT_TYPES.find(t => t.value === type)?.color || 'bg-slate-500';
+    };
+
     if (loading) {
         return (
             <div className="p-6">
@@ -247,22 +251,32 @@ export function AppointmentsPage() {
                     {appointments.map((appointment) => (
                         <div
                             key={appointment.id}
-                            className="card p-4 hover:border-teal-500/30 transition-colors"
+                            className={`card p-4 transition-all duration-300 ${appointment.status === 'COMPLETED' ? 'bg-green-200 border-emerald-500/20' :
+                                    appointment.status === 'CANCELLED' ? 'bg-red-200 border-emerald-500/20' :
+                                        appointment.status === 'NO_SHOW' ? 'bg-orange-200 border-rose-500/20' :
+                                            'hover:bg-white hover:shadow-xl hover:border-teal-500/30'
+                                }`}
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
                                     <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-teal-500/20 to-emerald-500/20 flex flex-col items-center justify-center border border-teal-500/20">
-                                        <Clock size={16} className="text-teal-400 mb-1" />
-                                        <span className="text-teal-400 font-bold text-lg">{appointment.time.substring(0, 5)}</span>
+                                        <Clock size={16} className="text-black mb-1" />
+                                        <span className="text-black font-bold text-lg">{appointment.time.substring(0, 5)}</span>
                                     </div>
+                                    <div className={`w-1 origin-left h-12 rounded-full ${getTypeColor(appointment.type)}`} />
                                     <div>
                                         <div className="flex items-center gap-2">
                                             <User size={16} className="text-slate-400" />
                                             <p className="font-semibold text-slate-800">{appointment.patientName}</p>
                                         </div>
-                                        <p className="text-slate-500 mt-1">{getTypeLabel(appointment.type)}</p>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <span className={`w-2 h-2 rounded-full ${getTypeColor(appointment.type)}`} />
+                                            <p className="text-sm font-medium text-slate-500">{getTypeLabel(appointment.type)}</p>
+                                        </div>
                                         {appointment.notes && (
-                                            <p className="text-xs text-slate-500 mt-1">{appointment.notes}</p>
+                                            <p className="text-xs text-slate-500 mt-1 italic leading-relaxed">
+                                                {appointment.notes}
+                                            </p>
                                         )}
                                     </div>
                                 </div>

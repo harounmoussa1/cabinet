@@ -174,13 +174,16 @@ export function SuppliersPage() {
                         >
                             <div className="flex items-start justify-between mb-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center border border-purple-100">
-                                        <Building2 className="text-purple-600" size={22} />
+                                    <div className="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center border border-indigo-100 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                                        <Building2 className="text-indigo-600" size={26} />
                                     </div>
                                     <div>
-                                        <h3 className="font-semibold text-slate-800">{supplier.name}</h3>
+                                        <h3 className="font-bold text-slate-800 text-lg group-hover:text-indigo-600 transition-colors">{supplier.name}</h3>
                                         {supplier.contact && (
-                                            <p className="text-sm text-slate-500">{supplier.contact}</p>
+                                            <p className="text-sm font-medium text-slate-500 flex items-center gap-1.5">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                                                {supplier.contact}
+                                            </p>
                                         )}
                                     </div>
                                 </div>
@@ -188,20 +191,20 @@ export function SuppliersPage() {
 
                             <div className="space-y-2 mb-4">
                                 {supplier.phone && (
-                                    <div className="flex items-center gap-2 text-sm text-slate-500">
-                                        <Phone size={14} className="text-slate-400" />
+                                    <div className="flex items-center gap-2.5 text-sm text-slate-600 font-medium bg-slate-50/50 p-2 rounded-lg">
+                                        <Phone size={14} className="text-indigo-500" />
                                         {supplier.phone}
                                     </div>
                                 )}
                                 {supplier.email && (
-                                    <div className="flex items-center gap-2 text-sm text-slate-500">
-                                        <Mail size={14} className="text-slate-400" />
+                                    <div className="flex items-center gap-2.5 text-sm text-slate-600 font-medium bg-slate-50/50 p-2 rounded-lg">
+                                        <Mail size={14} className="text-indigo-500" />
                                         {supplier.email}
                                     </div>
                                 )}
                                 {supplier.address && (
-                                    <div className="flex items-center gap-2 text-sm text-slate-500">
-                                        <MapPin size={14} className="text-slate-400" />
+                                    <div className="flex items-center gap-2.5 text-sm text-slate-600 font-medium bg-slate-50/50 p-2 rounded-lg">
+                                        <MapPin size={14} className="text-indigo-500" />
                                         <span className="truncate">{supplier.address}</span>
                                     </div>
                                 )}
@@ -326,38 +329,43 @@ export function SuppliersPage() {
                 isOpen={isViewOpen}
                 onClose={() => setIsViewOpen(false)}
                 title="Détails du fournisseur"
-                size="md"
+                size="lg"
             >
                 {selectedSupplier && (
                     <div className="space-y-6">
                         {/* Supplier Header */}
-                        <div className="flex items-center gap-4">
-                            <div className="w-16 h-16 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 border border-purple-200">
-                                <Building2 size={28} />
+                        <div className="flex items-center gap-5 p-2">
+                            <div className="w-20 h-20 rounded-2xl bg-indigo-500 flex flex-col items-center justify-center text-white border-4 border-white shadow-xl ring-1 ring-indigo-100">
+                                <Building2 size={36} />
                             </div>
                             <div>
-                                <h3 className="text-xl font-bold text-slate-800">{selectedSupplier.name}</h3>
+                                <h3 className="text-2xl font-black text-slate-800 tracking-tight">{selectedSupplier.name}</h3>
                                 {selectedSupplier.contact && (
-                                    <p className="text-slate-500">Contact: {selectedSupplier.contact}</p>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                        <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest">
+                                            Contact: {selectedSupplier.contact}
+                                        </p>
+                                    </div>
                                 )}
                             </div>
                         </div>
 
                         {/* Tabs Navigation */}
-                        <div className="flex border-b border-slate-200">
+                        <div className="flex border-b border-slate-200 px-2">
                             <button
                                 onClick={() => setViewTab('info')}
-                                className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 ${viewTab === 'info' ? 'border-teal-500 text-teal-600' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
+                                className={`px-6 py-3 text-sm font-bold uppercase tracking-widest transition-all border-b-2 ${viewTab === 'info' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
                             >
                                 Informations
                             </button>
                             <button
                                 onClick={() => setViewTab('billing')}
-                                className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 ${viewTab === 'billing' ? 'border-teal-500 text-teal-600' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
+                                className={`px-6 py-3 text-sm font-bold uppercase tracking-widest transition-all border-b-2 ${viewTab === 'billing' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
                             >
                                 <div className="flex items-center gap-2">
                                     <Receipt size={16} />
-                                    Facturation & Paiements
+                                    Facturation
                                 </div>
                             </button>
                         </div>
@@ -367,29 +375,37 @@ export function SuppliersPage() {
                             {viewTab === 'info' && (
                                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                                            <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Téléphone</p>
-                                            <p className="text-slate-800 font-medium flex items-center gap-2">
-                                                <Phone size={14} className="text-purple-500" />
+                                        <div className="p-4 rounded-2xl bg-indigo-50/30 border border-indigo-100 flex flex-col items-center text-center">
+                                            <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center mb-3">
+                                                <Phone size={18} className="text-indigo-600" />
+                                            </div>
+                                            <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-1">Téléphone</p>
+                                            <p className="text-slate-800 font-bold tracking-tight">
                                                 {selectedSupplier.phone || '-'}
                                             </p>
                                         </div>
-                                        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                                            <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Email</p>
-                                            <p className="text-slate-800 font-medium flex items-center gap-2">
-                                                <Mail size={14} className="text-purple-500" />
+                                        <div className="p-4 rounded-2xl bg-indigo-50/30 border border-indigo-100 flex flex-col items-center text-center">
+                                            <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center mb-3">
+                                                <Mail size={18} className="text-indigo-600" />
+                                            </div>
+                                            <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-1">Email</p>
+                                            <p className="text-slate-800 font-bold tracking-tight">
                                                 {selectedSupplier.email || '-'}
                                             </p>
                                         </div>
                                     </div>
 
                                     {selectedSupplier.address && (
-                                        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                                            <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Adresse</p>
-                                            <p className="text-slate-800 flex items-center gap-2">
-                                                <MapPin size={14} className="text-purple-500" />
-                                                {selectedSupplier.address}
-                                            </p>
+                                        <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200">
+                                            <div className="flex items-start gap-4">
+                                                <div className="p-2.5 rounded-xl bg-white border border-slate-200 shadow-sm">
+                                                    <MapPin size={20} className="text-indigo-500" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-1">Localisation</p>
+                                                    <p className="text-slate-800 font-bold leading-relaxed">{selectedSupplier.address}</p>
+                                                </div>
+                                            </div>
                                         </div>
                                     )}
 

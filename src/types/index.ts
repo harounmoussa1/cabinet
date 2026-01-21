@@ -4,6 +4,7 @@ export interface Patient {
     id: number;
     firstName: string;
     lastName: string;
+    cin?: string;
     birthDate?: string;
     phone?: string;
     address?: string;
@@ -53,15 +54,7 @@ export interface Prosthetic {
     paymentDate?: string;
 }
 
-export type ProstheticType =
-    | 'COURONNE'
-    | 'BRIDGE'
-    | 'APPAREIL'
-    | 'IMPLANT'
-    | 'FACETTE'
-    | 'INLAY'
-    | 'ONLAY'
-    | 'AUTRE';
+export type ProstheticType = string;
 
 export type ProstheticStatus = 'ORDERED' | 'IN_PROGRESS' | 'RECEIVED' | 'DELAYED' | 'CANCELLED';
 

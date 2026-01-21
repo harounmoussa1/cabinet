@@ -48,6 +48,7 @@ export function initDB() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             firstName TEXT NOT NULL,
             lastName TEXT NOT NULL,
+            cin TEXT,
             birthDate TEXT,
             phone TEXT,
             address TEXT,
@@ -142,6 +143,13 @@ export function initDB() {
             db.exec(`ALTER TABLE ${table} ADD COLUMN deletedAt DATETIME`);
         }
     });
+
+    // Special checks for patients
+    const patientColumns = db.prepare("PRAGMA table_info(patients)").all() as any[];
+    const patientColumnNames = patientColumns.map(c => c.name);
+    if (!patientColumnNames.includes('cin')) {
+        db.exec('ALTER TABLE patients ADD COLUMN cin TEXT');
+    }
 
     // Special checks for prosthetics
     const prostheticColumns = db.prepare("PRAGMA table_info(prosthetics)").all() as any[];

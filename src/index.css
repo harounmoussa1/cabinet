@@ -172,6 +172,10 @@
         @apply badge bg-sky-100 text-sky-700 border border-sky-200;
     }
 
+    .badge-neutral {
+        @apply badge bg-slate-100 text-slate-600 border border-slate-200;
+    }
+
     /* Modals */
     .modal-overlay {
         @apply fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 duration-200;

@@ -36,12 +36,11 @@ export function PatientsPage() {
 
     useEffect(() => {
         if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            setFilteredPatients(patients.filter(p =>
-                p.firstName.toLowerCase().includes(query) ||
-                p.lastName.toLowerCase().includes(query) ||
-                p.phone?.includes(query)
-            ));
+            const searchTerms = searchQuery.toLowerCase().split(' ').filter(t => t);
+            setFilteredPatients(patients.filter(p => {
+                const patientData = `${p.lastName} ${p.firstName} ${p.phone || ''} ${p.cin || ''}`.toLowerCase();
+                return searchTerms.every(term => patientData.includes(term));
+            }));
         } else {
             setFilteredPatients(patients);
         }
@@ -145,7 +144,7 @@ export function PatientsPage() {
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-teal-600 transition-colors" size={20} />
                     <input
                         type="text"
-                        placeholder="Rechercher par nom, prénom ou numéro de téléphone..."
+                        placeholder="Rechercher par nom, prénom, téléphone ou CIN..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="input pl-12 bg-white border-slate-200 focus:border-teal-500"
@@ -263,7 +262,7 @@ export function PatientsPage() {
                 size="lg"
             >
                 <form id="patient-form" onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
                         <div>
                             <label className="label">Prénom *</label>
                             <input
@@ -282,6 +281,16 @@ export function PatientsPage() {
                                 value={formData.lastName || ''}
                                 onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                                 required
+                            />
+                        </div>
+                        <div>
+                            <label className="label">CIN</label>
+                            <input
+                                type="text"
+                                className="input"
+                                value={formData.cin || ''}
+                                onChange={(e) => setFormData({ ...formData, cin: e.target.value })}
+                                placeholder="Numéro CIN"
                             />
                         </div>
                     </div>

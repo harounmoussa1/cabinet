@@ -65,6 +65,20 @@ export function DashboardPage() {
         return diff;
     };
 
+    const getTypeColor = (type: string) => {
+        const typeMap: Record<string, string> = {
+            'CONSULTATION': 'bg-indigo-500',
+            'DETARTRAGE': 'bg-teal-500',
+            'EXTRACTION': 'bg-rose-500',
+            'SOINS': 'bg-emerald-500',
+            'PROTHESE': 'bg-amber-500',
+            'CONTROLE': 'bg-violet-500',
+            'URGENCE': 'bg-red-600',
+            'AUTRE': 'bg-slate-500'
+        };
+        return typeMap[type] || 'bg-slate-500';
+    };
+
     if (loading) {
         return (
             <div className="p-8">
@@ -213,7 +227,11 @@ export function DashboardPage() {
                                 {todayAppointments.slice(0, 6).map((appointment) => (
                                     <div
                                         key={appointment.id}
-                                        className="group p-5 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-md hover:border-teal-500/30 transition-all duration-300"
+                                        className={`group p-5 rounded-2xl border transition-all duration-300 ${appointment.status === 'COMPLETED' ? 'bg-emerald-500/5 border-emerald-500/10 opacity-80' :
+                                                appointment.status === 'CANCELLED' ? 'bg-slate-100 border-slate-200 opacity-60 grayscale' :
+                                                    appointment.status === 'NO_SHOW' ? 'bg-rose-500/5 border-rose-500/10' :
+                                                        'bg-white border-slate-100 hover:shadow-lg hover:border-teal-500/30'
+                                            }`}
                                     >
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="px-3 py-1 rounded-lg bg-teal-500/10 border border-teal-500/20">
@@ -223,7 +241,7 @@ export function DashboardPage() {
                                         </div>
                                         <h3 className="text-lg font-bold text-slate-800 mb-1 group-hover:text-teal-600 transition-colors">{appointment.patientName}</h3>
                                         <p className="text-sm text-slate-500 font-medium flex items-center gap-2">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-slate-700" />
+                                            <div className={`w-2 h-2 rounded-full ${getTypeColor(appointment.type)}`} />
                                             {appointment.type}
                                         </p>
                                     </div>

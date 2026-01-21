@@ -189,25 +189,26 @@ function registerIpcHandlers() {
             const searchQuery = `%${query}%`;
             return db.prepare(`
                 SELECT * FROM patients 
-                WHERE (firstName LIKE ? OR lastName LIKE ? OR phone LIKE ?) AND isDeleted = 0
+                WHERE (firstName LIKE ? OR lastName LIKE ? OR phone LIKE ? OR cin LIKE ?) AND isDeleted = 0
                 ORDER BY lastName, firstName
-            `).all(searchQuery, searchQuery, searchQuery);
+            `).all(searchQuery, searchQuery, searchQuery, searchQuery);
         } catch (error) {
             console.error('search-patients error:', error);
             return [];
         }
     });
 
-    ipcMain.handle('create-patient', (_event, patient: { firstName: string, lastName: string, birthDate?: string, phone?: string, address?: string, medicalHistory?: string, allergies?: string, notes?: string }) => {
+    ipcMain.handle('create-patient', (_event, patient: { firstName: string, lastName: string, cin?: string, birthDate?: string, phone?: string, address?: string, medicalHistory?: string, allergies?: string, notes?: string }) => {
         try {
             console.log('IPC: create-patient received:', patient);
             const stmt = db.prepare(`
-                INSERT INTO patients (firstName, lastName, birthDate, phone, address, medicalHistory, allergies, notes)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO patients (firstName, lastName, cin, birthDate, phone, address, medicalHistory, allergies, notes)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             `);
             const result = stmt.run(
                 patient.firstName,
                 patient.lastName,
+                patient.cin || null,
                 patient.birthDate || null,
                 patient.phone || null,
                 patient.address || null,
@@ -226,7 +227,7 @@ function registerIpcHandlers() {
     ipcMain.handle('update-patient', (_event, id: number, patient: any) => {
         try {
             console.log('IPC: update-patient received:', id, patient);
-            const allowedFields = ['firstName', 'lastName', 'birthDate', 'phone', 'address', 'medicalHistory', 'allergies', 'notes'];
+            const allowedFields = ['firstName', 'lastName', 'cin', 'birthDate', 'phone', 'address', 'medicalHistory', 'allergies', 'notes'];
             const updates = Object.keys(patient)
                 .filter(key => allowedFields.includes(key))
                 .reduce((obj, key) => {
